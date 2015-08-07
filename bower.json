@@ -1,0 +1,21 @@
+{
+  "name": "Angular starter kit",
+  "version": "0.0.0",
+  "authors": [
+    "Adam Kruppa"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.4.3",
+    "angular-bootstrap": "~0.13.2",
+    "lodash": "~3.10.1",
+    "angular-ui-router": "~0.2.15"
+  }
+}
