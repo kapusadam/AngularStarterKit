@@ -11,7 +11,7 @@ cm.config(function($stateProvider, $urlRouterProvider) {
     $stateProvider
         .state('main', {
             url: "/main",
-            templateUrl: "app/cm/views/partials/main.html",
+            templateUrl: "app/app/views/partials/main.html",
             controller: "MainController"
         });
 });
