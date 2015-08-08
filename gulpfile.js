@@ -10,6 +10,7 @@ var ngAnnotate = require('gulp-ng-annotate');
 var inject = require('gulp-inject');
 var series = require('stream-series');
 var jshint = require('gulp-jshint');
+var clean = require('gulp-clean');
 var jasmine = require('gulp-jasmine');
 var reporters = require('jasmine-reporters');
 var jasmineBrowser = require('gulp-jasmine-browser');
@@ -32,7 +33,7 @@ gulp.task('minify-js', function() {
 });
 
 gulp.task('minify-css', function() {
-    return gulp.src(['app/app/css/reset.css', 'app/**/css/**/*.css'])
+    return gulp.src(['app/**/css/reset.css', 'app/**/css/**/*.css'])
         .pipe(concat('all.min.css'))
         .pipe(minifyCss({compatibility: 'ie8'}))
         .pipe(gulp.dest('dist'));
@@ -71,13 +72,18 @@ gulp.task('index', ['html', 'bower'], function () {
     var vendorStream = gulp.src(['vendor/js/*.js', '!vendor/js/angular.js'], {read: false});
     var appStream = gulp.src(['app/**/js/*.js', 'app/**/js/**/*.js'], {read: false});
 
-    var reset = gulp.src(['app/app/css/reset.css'], {read: false});
+    var reset = gulp.src(['app/**/css/reset.css'], {read: false});
     var vendorCss = gulp.src(['vendor/css/*.css'], {read: false});
-    var appCss = gulp.src(['app/app/css/*.css', '!app/app/css/reset.css'], {read: false});
+    var appCss = gulp.src(['app/**/css/*.css', '!app/**/css/reset.css'], {read: false});
 
     return gulp.src('index.html')
         .pipe(inject(series(reset, vendorCss, appCss, angular, vendorStream, appStream)))
         .pipe(gulp.dest(''));
+});
+
+gulp.task('clean-dist', function () {
+    return gulp.src('dist', {read: false})
+        .pipe(clean());
 });
 
 gulp.task('jshint', function () {
