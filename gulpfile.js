@@ -15,7 +15,8 @@ var reporters = require('jasmine-reporters');
 var jasmineBrowser = require('gulp-jasmine-browser');
 var watch = require('gulp-watch');
 var karma = require('gulp-karma');
-var Server = require('karma').Server;
+var protractor = require("gulp-protractor").protractor;
+//var webdriver_standalone = require("gulp-protractor").webdriver_standalone;
 
 gulp.task('server', function() {
     connect.server({
@@ -104,12 +105,22 @@ gulp.task('jasmine', function() {
 gulp.task('karma', function() {
     return gulp.src(['test/spec/*_spec.js'])
         .pipe(karma({
-            configFile: __dirname + '/karma.conf.js',
+            configFile: __dirname + '/test/karma.conf.js',
             action: 'watch'
         }))
         .on('error', function(err) {
             throw err;
         });
+});
+
+// Setting up the test task
+gulp.task('e2e', function() {
+    gulp.src(['test/spec-e2e/*_spec.js'])
+        .pipe(protractor({
+            configFile: "test/protractor.conf.js",
+            args: ['--baseUrl', 'http://127.0.0.1:8000']
+        }))
+        .on('error', function(e) { throw e })
 });
 
 gulp.task('default', ['jshint', 'index', 'server', 'watch']);

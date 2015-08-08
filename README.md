@@ -5,6 +5,7 @@ Steps:
 npm install
 bower install
 Rename app in app folder for your app-name (optional)
+node_modules/protractor/bin/webdriver-manager update --standalone --chrome
 
 Debug mode: 
 

@@ -3,7 +3,7 @@
  */
 describe("First describe", function() {
     it("First example", function() {
-        expect(true).toBe(false);
+        expect(true).toBe(true);
     });
 });
 describe("Second describe", function() {
