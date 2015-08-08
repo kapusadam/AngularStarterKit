@@ -3,6 +3,13 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+    <!-- @ifdef DEBUG -->
+        <!-- inject:css -->
+        <!-- endinject -->
+    <!-- @endif -->
+    <!-- @ifndef  DEBUG -->
+        <link rel="stylesheet" type="text/css" href="dist/all.min.css">
+    <!-- @endif -->
 </head>
 <body ng-app="cm">
     <div ui-view></div>

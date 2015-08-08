@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 var uglify = require('gulp-uglify');
+var minifyCss = require('gulp-minify-css');
 var concat = require('gulp-concat');
-var es = require('event-stream');
 var jeditor = require("gulp-json-editor");
 var preprocess = require('gulp-preprocess');
 var connect = require('gulp-connect');
@@ -16,7 +16,6 @@ var jasmineBrowser = require('gulp-jasmine-browser');
 var watch = require('gulp-watch');
 var karma = require('gulp-karma');
 var protractor = require("gulp-protractor").protractor;
-//var webdriver_standalone = require("gulp-protractor").webdriver_standalone;
 
 gulp.task('server', function() {
     connect.server({
@@ -24,7 +23,7 @@ gulp.task('server', function() {
     });
 });
 
-gulp.task('minify', function() {
+gulp.task('minify-js', function() {
     return gulp.src(['vendor/js/angular.js', 'vendor/js/*.js', 'app/**/js/*.js', 'app/**/js/**/*.js'])
         .pipe(ngAnnotate())
         .pipe(concat('all.min.js'))
@@ -32,15 +31,15 @@ gulp.task('minify', function() {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('scripts', function() {
-    return gulp.src(['vendor/js/angular.js', 'vendor/js/*.js', 'app/**/js/*.js', 'app/**/js/**/*.js'])
-        .pipe(ngAnnotate())
-        .pipe(concat('all.js'))
+gulp.task('minify-css', function() {
+    return gulp.src(['app/app/css/reset.css', 'app/**/css/**/*.css'])
+        .pipe(concat('all.min.css'))
+        .pipe(minifyCss({compatibility: 'ie8'}))
         .pipe(gulp.dest('dist'));
 });
 
 gulp.task('watch', function() {
-    gulp.watch(['app/**/js/*.js', 'app/**/js/**/*.js', 'app/*.html', 'app/**/views/**/*.html'], ['jshint', 'index']);
+    gulp.watch(['app/**/js/*.js', 'app/**/js/**/*.js', 'app/*.html', 'app/**/views/**/*.html', 'app/**/css/**/*.css'], ['jshint', 'index']);
 });
 
 gulp.task('watch-test', function() {
@@ -70,15 +69,19 @@ gulp.task('bower', function() {
 gulp.task('index', ['html', 'bower'], function () {
     var angular = gulp.src(['vendor/js/angular.js'], {read: false});
     var vendorStream = gulp.src(['vendor/js/*.js', '!vendor/js/angular.js'], {read: false});
-    var appStream = gulp.src(['app//**js/*.js', 'app/**/js/**/*.js'], {read: false});
+    var appStream = gulp.src(['app/**/js/*.js', 'app/**/js/**/*.js'], {read: false});
+
+    var reset = gulp.src(['app/app/css/reset.css'], {read: false});
+    var vendorCss = gulp.src(['vendor/css/*.css'], {read: false});
+    var appCss = gulp.src(['app/app/css/*.css', '!app/app/css/reset.css'], {read: false});
 
     return gulp.src('index.html')
-        .pipe(inject(series(angular, vendorStream, appStream)))
+        .pipe(inject(series(reset, vendorCss, appCss, angular, vendorStream, appStream)))
         .pipe(gulp.dest(''));
 });
 
 gulp.task('jshint', function () {
-    return gulp.src(['app/**/**/*.js', 'test/spec/*_spec.js'])
+    return gulp.src(['app/**/**/*.js', 'test/**/*_spec.js'])
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-summary', {
             verbose: true,
@@ -113,7 +116,6 @@ gulp.task('karma', function() {
         });
 });
 
-// Setting up the test task
 gulp.task('e2e', function() {
     gulp.src(['test/spec-e2e/*_spec.js'])
         .pipe(protractor({
@@ -125,6 +127,8 @@ gulp.task('e2e', function() {
 
 gulp.task('default', ['jshint', 'index', 'server', 'watch']);
 
-gulp.task('run', ['html', 'minify', 'server']);
+gulp.task('run', ['html', 'minify-js', 'minify-css', 'server']);
 
 gulp.task('test', ['jshint', 'jasmine-test', 'watch-test']);
+
+gulp.task('test-e2e', ['jshint', 'e2e']);
