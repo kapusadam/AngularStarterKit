@@ -10,6 +10,8 @@ var mainBowerFiles = require('main-bower-files');
 var ngAnnotate = require('gulp-ng-annotate');
 var inject = require('gulp-inject');
 var series = require('stream-series');
+var jasmine = require('gulp-jasmine');
+var reporters = require('jasmine-reporters');
 
 gulp.task('server', function() {
     connect.server({
@@ -18,7 +20,7 @@ gulp.task('server', function() {
 });
 
 gulp.task('minify', function() {
-     return gulp.src(['vendor/js/angular.js', 'vendor/js/*.js', 'app/**/js/*.js', 'app/**/js/**/*.js'])
+    return gulp.src(['vendor/js/angular.js', 'vendor/js/*.js', 'app/**/js/*.js', 'app/**/js/**/*.js'])
         .pipe(ngAnnotate())
         .pipe(concat('all.min.js'))
         .pipe(uglify())
@@ -34,6 +36,10 @@ gulp.task('scripts', function() {
 
 gulp.task('watch', function() {
     gulp.watch(['app/**/js/*.js', 'app/**/js/**/*.js', 'app/*.html', 'app/**/views/**/*.html'], ['index']);
+});
+
+gulp.task('watch-test', function() {
+    gulp.watch(['test/spec/*.js'], ['jasmine-test']);
 });
 
 gulp.task('pcg_mod', function() {
@@ -66,6 +72,18 @@ gulp.task('index', ['html', 'bower'], function () {
         .pipe(gulp.dest(''));
 });
 
+
+gulp.task('jasmine-test', function () {
+    return gulp.src('test/spec/*.js')
+        .pipe(jasmine({
+            reporter: new reporters.JUnitXmlReporter()
+        }))
+        .pipe(jasmine());
+});
+
+
 gulp.task('default', ['index', 'server', 'watch']);
 
 gulp.task('run', ['html', 'minify', 'server']);
+
+gulp.task('test', ['jasmine-test', 'watch-test']);
